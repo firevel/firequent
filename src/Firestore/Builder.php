@@ -2104,6 +2104,12 @@ class Builder
             ->connection
             ->collection($this->from);
 
+        if (!empty($this->orders)) {
+            foreach ($this->orders as $order) {
+                $collection = $collection->orderBy($order['column'], strtoupper($order['direction']));
+            }
+        }
+
         if (!empty($this->wheres)) {
             foreach ($this->wheres as $where) {
                 switch  ($where['type']) {
