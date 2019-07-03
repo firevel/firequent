@@ -829,6 +829,22 @@ class Builder
     }
 
     /**
+     * Add a "where in array" clause to the query.
+     *
+     * @param  string  $column
+     * @param  mixed   $values
+     * @return $this
+     */
+    public function whereInArray($column, $value)
+    {
+        $type = 'InArray';
+
+        $this->wheres[] = compact('type', 'column', 'value');
+
+        return $this;
+    }
+
+    /**
      * Add a "where in" clause to the query.
      *
      * @param  string  $column
@@ -2096,6 +2112,9 @@ class Builder
                         break;
                     case 'Basic':
                         $collection = $collection->where($where['column'], $where['operator'], $where['value']);
+                        break;
+                    case 'InArray':
+                        $collection = $collection->where($where['column'], 'array-contains', $where['value']);
                         break;
                     default:
                         throw new \Exception('Unsupported query type '.$where['type']);
