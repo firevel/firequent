@@ -874,14 +874,6 @@ class Builder
             $values
         );
 
-        $segments = preg_split('/\s+as\s+/i', $this->query->from);
-
-        $qualifiedColumn = end($segments).'.'.$column;
-
-        $values[$qualifiedColumn] = $values[$column];
-
-        unset($values[$column]);
-
         return $values;
     }
 
