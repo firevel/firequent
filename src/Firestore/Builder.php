@@ -1628,6 +1628,24 @@ class Builder
 
     protected function runQuery()
     {
+        $collection = $this->buildCollectionQuery();
+
+        $documents = $collection->documents();
+
+        if ($documents->isEmpty()) {
+            return [];
+        }
+
+        return array_map(
+            function($snapshot) {
+                return $snapshot->data();
+            },
+            $documents->rows()
+        );
+    }
+
+    public function buildCollectionQuery()
+    {
         $collection = $this
             ->connection
             ->collection($this->from);
@@ -1661,18 +1679,7 @@ class Builder
             }
         }
 
-        $documents = $collection->documents();
-
-        if ($documents->isEmpty()) {
-            return [];
-        }
-
-        return array_map(
-            function($snapshot) {
-                return $snapshot->data();
-            },
-            $documents->rows()
-        );
+        return $collection;
     }
 
     /**
@@ -2326,18 +2333,44 @@ class Builder
      */
     public function delete($id = null)
     {
+        $document = $this->document;
         // If an ID is passed to the method, we will set the where clause to check the
         // ID to let developers to simply and quickly remove a single row from this
         // database without manually specifying the "where" clauses on the query.
         if (! is_null($id)) {
-            $this->where($this->from.'.id', '=', $id);
+            $document = $id;
         }
 
-        return $this->connection->delete(
-            $this->grammar->compileDelete($this), $this->cleanBindings(
-                $this->grammar->prepareBindingsForDelete($this->bindings)
-            )
-        );
+        if (empty($document)) {
+            return $this->deleteCollection($this->buildCollectionQuery());
+        }
+
+        return $this
+            ->connection
+            ->collection($this->from)
+            ->document($document)
+            ->delete();
+    }
+
+    /**
+     * Delete collection.
+     *
+     * @param CollectionReference $collectionReference 
+     * @param integer $batchSize
+     * @return boolean
+     */
+    function deleteCollection($collectionReference, $batchSize = 100)
+    {
+        $documents = $collectionReference->limit($batchSize)->documents();
+
+        while (!$documents->isEmpty()) {
+            foreach ($documents as $document) {
+                $document->reference()->delete();
+            }
+            $documents = $collectionReference->limit($batchSize)->documents();
+        }
+
+        return true;
     }
 
     /**
