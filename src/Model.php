@@ -441,16 +441,6 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
     }
 
     /**
-     * Begin querying the model on the write connection.
-     *
-     * @return \Illuminate\Database\Query\Builder
-     */
-    public static function onWriteConnection()
-    {
-        return static::query()->useWritePdo();
-    }
-
-    /**
      * Get all of the models from the database.
      *
      * @param  array|mixed  $columns

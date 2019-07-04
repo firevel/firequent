@@ -41,20 +41,6 @@ class Builder
     public $connection;
 
     /**
-     * The database query grammar instance.
-     *
-     * @var \Illuminate\Database\Query\Grammars\Grammar
-     */
-    public $grammar;
-
-    /**
-     * The database query post processor instance.
-     *
-     * @var \Illuminate\Database\Query\Processors\Processor
-     */
-    public $processor;
-
-    /**
      * The current query value bindings.
      *
      * @var array
@@ -103,13 +89,6 @@ class Builder
      * @var array
      */
     public $wheres = [];
-
-    /**
-     * The groupings for the query.
-     *
-     * @var array
-     */
-    public $groups;
 
     /**
      * The having constraints for the query.
@@ -191,13 +170,6 @@ class Builder
     ];
 
     /**
-     * Whether use write pdo for select.
-     *
-     * @var bool
-     */
-    public $useWritePdo = false;
-
-    /**
      * Create a new query builder instance.
      *
      * @param  \Illuminate\Database\ConnectionInterface  $connection
@@ -271,22 +243,6 @@ class Builder
         [$query, $bindings] = $this->createSub($query);
 
         return $this->fromRaw('('.$query.') as '.$this->grammar->wrapTable($as), $bindings);
-    }
-
-    /**
-     * Add a raw from clause to the query.
-     *
-     * @param  string  $expression
-     * @param  mixed   $bindings
-     * @return \Illuminate\Database\Query\Builder|static
-     */
-    public function fromRaw($expression, $bindings = [])
-    {
-        $this->from = new Expression($expression);
-
-        $this->addBinding($bindings, 'from');
-
-        return $this;
     }
 
     /**
@@ -446,112 +402,6 @@ class Builder
         $this->addBinding($bindings, 'join');
 
         return $this->join(new Expression($expression), $first, $operator, $second, $type, $where);
-    }
-
-    /**
-     * Add a left join to the query.
-     *
-     * @param  string  $table
-     * @param  \Closure|string  $first
-     * @param  string|null  $operator
-     * @param  string|null  $second
-     * @return \Illuminate\Database\Query\Builder|static
-     */
-    public function leftJoin($table, $first, $operator = null, $second = null)
-    {
-        return $this->join($table, $first, $operator, $second, 'left');
-    }
-
-    /**
-     * Add a "join where" clause to the query.
-     *
-     * @param  string  $table
-     * @param  \Closure|string  $first
-     * @param  string  $operator
-     * @param  string  $second
-     * @return \Illuminate\Database\Query\Builder|static
-     */
-    public function leftJoinWhere($table, $first, $operator, $second)
-    {
-        return $this->joinWhere($table, $first, $operator, $second, 'left');
-    }
-
-    /**
-     * Add a subquery left join to the query.
-     *
-     * @param  \Closure|\Illuminate\Database\Query\Builder|string $query
-     * @param  string  $as
-     * @param  \Closure|string  $first
-     * @param  string|null  $operator
-     * @param  string|null  $second
-     * @return \Illuminate\Database\Query\Builder|static
-     */
-    public function leftJoinSub($query, $as, $first, $operator = null, $second = null)
-    {
-        return $this->joinSub($query, $as, $first, $operator, $second, 'left');
-    }
-
-    /**
-     * Add a right join to the query.
-     *
-     * @param  string  $table
-     * @param  \Closure|string  $first
-     * @param  string|null  $operator
-     * @param  string|null  $second
-     * @return \Illuminate\Database\Query\Builder|static
-     */
-    public function rightJoin($table, $first, $operator = null, $second = null)
-    {
-        return $this->join($table, $first, $operator, $second, 'right');
-    }
-
-    /**
-     * Add a "right join where" clause to the query.
-     *
-     * @param  string  $table
-     * @param  \Closure|string  $first
-     * @param  string  $operator
-     * @param  string  $second
-     * @return \Illuminate\Database\Query\Builder|static
-     */
-    public function rightJoinWhere($table, $first, $operator, $second)
-    {
-        return $this->joinWhere($table, $first, $operator, $second, 'right');
-    }
-
-    /**
-     * Add a subquery right join to the query.
-     *
-     * @param  \Closure|\Illuminate\Database\Query\Builder|string $query
-     * @param  string  $as
-     * @param  \Closure|string  $first
-     * @param  string|null  $operator
-     * @param  string|null  $second
-     * @return \Illuminate\Database\Query\Builder|static
-     */
-    public function rightJoinSub($query, $as, $first, $operator = null, $second = null)
-    {
-        return $this->joinSub($query, $as, $first, $operator, $second, 'right');
-    }
-
-    /**
-     * Add a "cross join" clause to the query.
-     *
-     * @param  string  $table
-     * @param  \Closure|string|null  $first
-     * @param  string|null  $operator
-     * @param  string|null  $second
-     * @return \Illuminate\Database\Query\Builder|static
-     */
-    public function crossJoin($table, $first = null, $operator = null, $second = null)
-    {
-        if ($first) {
-            return $this->join($table, $first, $operator, $second, 'cross');
-        }
-
-        $this->joins[] = $this->newJoinClause($this, 'cross', $table);
-
-        return $this;
     }
 
     /**
@@ -733,23 +583,6 @@ class Builder
     }
 
     /**
-     * Add an "or where" clause to the query.
-     *
-     * @param  string|array|\Closure  $column
-     * @param  mixed  $operator
-     * @param  mixed  $value
-     * @return \Illuminate\Database\Query\Builder|static
-     */
-    public function orWhere($column, $operator = null, $value = null)
-    {
-        [$value, $operator] = $this->prepareValueAndOperator(
-            $value, $operator, func_num_args() === 2
-        );
-
-        return $this->where($column, $operator, $value, 'or');
-    }
-
-    /**
      * Add a "where" clause comparing two columns to the query.
      *
      * @param  string|array  $first
@@ -787,19 +620,6 @@ class Builder
     }
 
     /**
-     * Add an "or where" clause comparing two columns to the query.
-     *
-     * @param  string|array  $first
-     * @param  string|null  $operator
-     * @param  string|null  $second
-     * @return \Illuminate\Database\Query\Builder|static
-     */
-    public function orWhereColumn($first, $operator = null, $second = null)
-    {
-        return $this->whereColumn($first, $operator, $second, 'or');
-    }
-
-    /**
      * Add a raw where clause to the query.
      *
      * @param  string  $sql
@@ -814,18 +634,6 @@ class Builder
         $this->addBinding((array) $bindings, 'where');
 
         return $this;
-    }
-
-    /**
-     * Add a raw or where clause to the query.
-     *
-     * @param  string  $sql
-     * @param  mixed   $bindings
-     * @return \Illuminate\Database\Query\Builder|static
-     */
-    public function orWhereRaw($sql, $bindings = [])
-    {
-        return $this->whereRaw($sql, $bindings, 'or');
     }
 
     /**
@@ -888,18 +696,6 @@ class Builder
     }
 
     /**
-     * Add an "or where in" clause to the query.
-     *
-     * @param  string  $column
-     * @param  mixed   $values
-     * @return \Illuminate\Database\Query\Builder|static
-     */
-    public function orWhereIn($column, $values)
-    {
-        return $this->whereIn($column, $values, 'or');
-    }
-
-    /**
      * Add a "where not in" clause to the query.
      *
      * @param  string  $column
@@ -910,18 +706,6 @@ class Builder
     public function whereNotIn($column, $values, $boolean = 'and')
     {
         return $this->whereIn($column, $values, $boolean, true);
-    }
-
-    /**
-     * Add an "or where not in" clause to the query.
-     *
-     * @param  string  $column
-     * @param  mixed   $values
-     * @return \Illuminate\Database\Query\Builder|static
-     */
-    public function orWhereNotIn($column, $values)
-    {
-        return $this->whereNotIn($column, $values, 'or');
     }
 
     /**
@@ -1026,17 +810,6 @@ class Builder
     }
 
     /**
-     * Add an "or where null" clause to the query.
-     *
-     * @param  string  $column
-     * @return \Illuminate\Database\Query\Builder|static
-     */
-    public function orWhereNull($column)
-    {
-        return $this->whereNull($column, 'or');
-    }
-
-    /**
      * Add a "where not null" clause to the query.
      *
      * @param  string  $column
@@ -1069,18 +842,6 @@ class Builder
     }
 
     /**
-     * Add an or where between statement to the query.
-     *
-     * @param  string  $column
-     * @param  array   $values
-     * @return \Illuminate\Database\Query\Builder|static
-     */
-    public function orWhereBetween($column, array $values)
-    {
-        return $this->whereBetween($column, $values, 'or');
-    }
-
-    /**
      * Add a where not between statement to the query.
      *
      * @param  string  $column
@@ -1091,29 +852,6 @@ class Builder
     public function whereNotBetween($column, array $values, $boolean = 'and')
     {
         return $this->whereBetween($column, $values, $boolean, true);
-    }
-
-    /**
-     * Add an or where not between statement to the query.
-     *
-     * @param  string  $column
-     * @param  array   $values
-     * @return \Illuminate\Database\Query\Builder|static
-     */
-    public function orWhereNotBetween($column, array $values)
-    {
-        return $this->whereNotBetween($column, $values, 'or');
-    }
-
-    /**
-     * Add an "or where not null" clause to the query.
-     *
-     * @param  string  $column
-     * @return \Illuminate\Database\Query\Builder|static
-     */
-    public function orWhereNotNull($column)
-    {
-        return $this->whereNotNull($column, 'or');
     }
 
     /**
@@ -1136,23 +874,6 @@ class Builder
         }
 
         return $this->addDateBasedWhere('Date', $column, $operator, $value, $boolean);
-    }
-
-    /**
-     * Add an "or where date" statement to the query.
-     *
-     * @param  string  $column
-     * @param  string  $operator
-     * @param  \DateTimeInterface|string|null  $value
-     * @return \Illuminate\Database\Query\Builder|static
-     */
-    public function orWhereDate($column, $operator, $value = null)
-    {
-        [$value, $operator] = $this->prepareValueAndOperator(
-            $value, $operator, func_num_args() === 2
-        );
-
-        return $this->whereDate($column, $operator, $value, 'or');
     }
 
     /**
@@ -1226,23 +947,6 @@ class Builder
     }
 
     /**
-     * Add an "or where month" statement to the query.
-     *
-     * @param  string  $column
-     * @param  string  $operator
-     * @param  \DateTimeInterface|string|null  $value
-     * @return \Illuminate\Database\Query\Builder|static
-     */
-    public function orWhereMonth($column, $operator, $value = null)
-    {
-        [$value, $operator] = $this->prepareValueAndOperator(
-            $value, $operator, func_num_args() === 2
-        );
-
-        return $this->addDateBasedWhere('Month', $column, $operator, $value, 'or');
-    }
-
-    /**
      * Add a "where year" statement to the query.
      *
      * @param  string  $column
@@ -1262,23 +966,6 @@ class Builder
         }
 
         return $this->addDateBasedWhere('Year', $column, $operator, $value, $boolean);
-    }
-
-    /**
-     * Add an "or where year" statement to the query.
-     *
-     * @param  string  $column
-     * @param  string  $operator
-     * @param  \DateTimeInterface|string|int|null  $value
-     * @return \Illuminate\Database\Query\Builder|static
-     */
-    public function orWhereYear($column, $operator, $value = null)
-    {
-        [$value, $operator] = $this->prepareValueAndOperator(
-            $value, $operator, func_num_args() === 2
-        );
-
-        return $this->addDateBasedWhere('Year', $column, $operator, $value, 'or');
     }
 
     /**
@@ -1394,18 +1081,6 @@ class Builder
     }
 
     /**
-     * Add an or exists clause to the query.
-     *
-     * @param  \Closure $callback
-     * @param  bool     $not
-     * @return \Illuminate\Database\Query\Builder|static
-     */
-    public function orWhereExists(Closure $callback, $not = false)
-    {
-        return $this->whereExists($callback, 'or', $not);
-    }
-
-    /**
      * Add a where not exists clause to the query.
      *
      * @param  \Closure $callback
@@ -1415,17 +1090,6 @@ class Builder
     public function whereNotExists(Closure $callback, $boolean = 'and')
     {
         return $this->whereExists($callback, $boolean, true);
-    }
-
-    /**
-     * Add a where not exists clause to the query.
-     *
-     * @param  \Closure  $callback
-     * @return \Illuminate\Database\Query\Builder|static
-     */
-    public function orWhereNotExists(Closure $callback)
-    {
-        return $this->orWhereExists($callback, true);
     }
 
     /**
@@ -1472,19 +1136,6 @@ class Builder
     }
 
     /**
-     * Adds a or where condition using row values.
-     *
-     * @param  array   $columns
-     * @param  string  $operator
-     * @param  array   $values
-     * @return $this
-     */
-    public function orWhereRowValues($columns, $operator, $values)
-    {
-        return $this->whereRowValues($columns, $operator, $values, 'or');
-    }
-
-    /**
      * Add a "where JSON contains" clause to the query.
      *
      * @param  string  $column
@@ -1507,18 +1158,6 @@ class Builder
     }
 
     /**
-     * Add a "or where JSON contains" clause to the query.
-     *
-     * @param  string  $column
-     * @param  mixed  $value
-     * @return $this
-     */
-    public function orWhereJsonContains($column, $value)
-    {
-        return $this->whereJsonContains($column, $value, 'or');
-    }
-
-    /**
      * Add a "where JSON not contains" clause to the query.
      *
      * @param  string  $column
@@ -1529,18 +1168,6 @@ class Builder
     public function whereJsonDoesntContain($column, $value, $boolean = 'and')
     {
         return $this->whereJsonContains($column, $value, $boolean, true);
-    }
-
-    /**
-     * Add a "or where JSON not contains" clause to the query.
-     *
-     * @param  string  $column
-     * @param  mixed  $value
-     * @return $this
-     */
-    public function orWhereJsonDoesntContain($column, $value)
-    {
-        return $this->whereJsonDoesntContain($column, $value, 'or');
     }
 
     /**
@@ -1567,23 +1194,6 @@ class Builder
         }
 
         return $this;
-    }
-
-    /**
-     * Add a "or where JSON length" clause to the query.
-     *
-     * @param  string  $column
-     * @param  mixed  $operator
-     * @param  mixed  $value
-     * @return $this
-     */
-    public function orWhereJsonLength($column, $operator, $value = null)
-    {
-        [$value, $operator] = $this->prepareValueAndOperator(
-            $value, $operator, func_num_args() === 2
-        );
-
-        return $this->whereJsonLength($column, $operator, $value, 'or');
     }
 
     /**
@@ -1649,24 +1259,6 @@ class Builder
     }
 
     /**
-     * Add a "group by" clause to the query.
-     *
-     * @param  array  ...$groups
-     * @return $this
-     */
-    public function groupBy(...$groups)
-    {
-        foreach ($groups as $group) {
-            $this->groups = array_merge(
-                (array) $this->groups,
-                Arr::wrap($group)
-            );
-        }
-
-        return $this;
-    }
-
-    /**
      * Add a "having" clause to the query.
      *
      * @param  string  $column
@@ -1700,23 +1292,6 @@ class Builder
         }
 
         return $this;
-    }
-
-    /**
-     * Add a "or having" clause to the query.
-     *
-     * @param  string  $column
-     * @param  string|null  $operator
-     * @param  string|null  $value
-     * @return \Illuminate\Database\Query\Builder|static
-     */
-    public function orHaving($column, $operator = null, $value = null)
-    {
-        [$value, $operator] = $this->prepareValueAndOperator(
-            $value, $operator, func_num_args() === 2
-        );
-
-        return $this->having($column, $operator, $value, 'or');
     }
 
     /**
@@ -1756,18 +1331,6 @@ class Builder
         $this->addBinding($bindings, 'having');
 
         return $this;
-    }
-
-    /**
-     * Add a raw or having clause to the query.
-     *
-     * @param  string  $sql
-     * @param  array   $bindings
-     * @return \Illuminate\Database\Query\Builder|static
-     */
-    public function orHavingRaw($sql, array $bindings = [])
-    {
-        return $this->havingRaw($sql, $bindings, 'or');
     }
 
     /**
@@ -1826,35 +1389,6 @@ class Builder
     public function oldest($column = 'created_at')
     {
         return $this->orderBy($column, 'asc');
-    }
-
-    /**
-     * Put the query's results in random order.
-     *
-     * @param  string  $seed
-     * @return $this
-     */
-    public function inRandomOrder($seed = '')
-    {
-        return $this->orderByRaw($this->grammar->compileRandom($seed));
-    }
-
-    /**
-     * Add a raw "order by" clause to the query.
-     *
-     * @param  string  $sql
-     * @param  array  $bindings
-     * @return $this
-     */
-    public function orderByRaw($sql, $bindings = [])
-    {
-        $type = 'Raw';
-
-        $this->{$this->unions ? 'unionOrders' : 'orders'}[] = compact('type', 'sql');
-
-        $this->addBinding($bindings, 'order');
-
-        return $this;
     }
 
     /**
@@ -2017,10 +1551,6 @@ class Builder
     {
         $this->lock = $value;
 
-        if (! is_null($this->lock)) {
-            $this->useWritePdo();
-        }
-
         return $this;
     }
 
@@ -2142,18 +1672,6 @@ class Builder
                 return $snapshot->data();
             },
             $documents->rows()
-        );
-    }
-
-    /**
-     * Run the query as a "select" statement against the connection.
-     *
-     * @return array
-     */
-    protected function runSelect()
-    {
-        return $this->connection->select(
-            $this->toSql(), $this->getBindings(), ! $this->useWritePdo
         );
     }
 
@@ -2347,7 +1865,7 @@ class Builder
             is_null($key) ? [$column] : [$column, $key],
             function () {
                 return $this->processor->processSelect(
-                    $this, $this->runSelect()
+                    // $this, $this->runSelect()
                 );
             }
         );
@@ -2963,38 +2481,6 @@ class Builder
     public function getConnection()
     {
         return $this->connection;
-    }
-
-    /**
-     * Get the database query processor instance.
-     *
-     * @return \Illuminate\Database\Query\Processors\Processor
-     */
-    public function getProcessor()
-    {
-        return $this->processor;
-    }
-
-    /**
-     * Get the query grammar instance.
-     *
-     * @return \Illuminate\Database\Query\Grammars\Grammar
-     */
-    public function getGrammar()
-    {
-        return $this->grammar;
-    }
-
-    /**
-     * Use the write pdo for query.
-     *
-     * @return $this
-     */
-    public function useWritePdo()
-    {
-        $this->useWritePdo = true;
-
-        return $this;
     }
 
     /**
