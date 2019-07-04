@@ -1902,10 +1902,8 @@ class Builder
      */
     public function limit($value)
     {
-        $property = $this->unions ? 'unionLimit' : 'limit';
-
         if ($value >= 0) {
-            $this->$property = $value;
+            $this->limit = $value;
         }
 
         return $this;
@@ -2108,6 +2106,10 @@ class Builder
             foreach ($this->orders as $order) {
                 $collection = $collection->orderBy($order['column'], strtoupper($order['direction']));
             }
+        }
+
+        if (!empty($this->limit)) {
+            $collection = $collection->limit($this->limit);
         }
 
         if (!empty($this->wheres)) {
