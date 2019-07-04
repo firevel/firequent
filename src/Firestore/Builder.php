@@ -2189,13 +2189,15 @@ class Builder
             }
         }
 
-        // Finally, we will run this query against the database connection and return
-        // the results. We will need to also flatten these bindings before running
-        // the query so they are all in one huge, flattened array for execution.
-        return $this->connection->insert(
-            $this->grammar->compileInsert($this, $values),
-            $this->cleanBindings(Arr::flatten($values, 1))
-        );
+        foreach ($values as $value) {
+            $this
+                ->connection
+                ->collection($this->from)
+                ->document($value['id'])
+                ->set($value);
+        }
+
+        return true;
     }
 
     /**
