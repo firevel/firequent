@@ -20,5 +20,12 @@
         "psr-4": {
             "Firevel\\Firequent\\": "src/"
         }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Firevel\\Firequent\\FirequentServiceProvider"
+            ]
+        }
     }
 }
