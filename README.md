@@ -16,3 +16,4 @@ Firequent is a Laravel Eloquent version modified to work with Google Firestore i
 - Activate Firestore in you Google console (native mode)
 - Inside your model file replace `use Illuminate\Database\Eloquent\Model;` with `use Firevel\Firequent\Model;`
 - If you are running your app outside Google App Engine, you will need to set GOOGLE_APPLICATION_CREDENTIALS in your .env file ([more](https://cloud.google.com/docs/authentication/getting-started#setting_the_environment_variable))
+- Firestore is a NoSQL database, and it doesn't need migrations. Schemas are automatically generated from attributes.
