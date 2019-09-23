@@ -16,5 +16,7 @@ class FirequentServiceProvider extends ServiceProvider
     public function boot()
     {
         Model::setConnectionResolver(new ConnectionResolver);
+
+        Model::setEventDispatcher($this->app['events']);
     }
 }
