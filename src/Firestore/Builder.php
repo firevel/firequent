@@ -323,7 +323,6 @@ class Builder
         return $this;
     }
 
-
     /**
      * Add a join clause to the query.
      *
@@ -1625,7 +1624,6 @@ class Builder
         return collect($this->runQuery());
     }
 
-
     protected function runQuery()
     {
         $collection = $this->buildCollectionQuery();
@@ -1637,7 +1635,7 @@ class Builder
         }
 
         return array_map(
-            function($snapshot) {
+            function ($snapshot) {
                 return $snapshot->data();
             },
             $documents->rows()
@@ -1650,19 +1648,19 @@ class Builder
             ->connection
             ->collection($this->from);
 
-        if (!empty($this->orders)) {
+        if (! empty($this->orders)) {
             foreach ($this->orders as $order) {
                 $collection = $collection->orderBy($order['column'], strtoupper($order['direction']));
             }
         }
 
-        if (!empty($this->limit)) {
+        if (! empty($this->limit)) {
             $collection = $collection->limit($this->limit);
         }
 
-        if (!empty($this->wheres)) {
+        if (! empty($this->wheres)) {
             foreach ($this->wheres as $where) {
-                switch  ($where['type']) {
+                switch ($where['type']) {
                     case 'NotNull':
                         $collection = $collection->where($where['column'], '>', '');
                         break;
@@ -2219,7 +2217,7 @@ class Builder
     /**
      * Generate random id.
      *
-     * @return integer
+     * @return int
      */
     public function generateRandomId()
     {
@@ -2352,15 +2350,15 @@ class Builder
     /**
      * Delete collection.
      *
-     * @param CollectionReference $collectionReference 
-     * @param integer $batchSize
-     * @return boolean
+     * @param CollectionReference $collectionReference
+     * @param int $batchSize
+     * @return bool
      */
-    function deleteCollection($collectionReference, $batchSize = 100)
+    public function deleteCollection($collectionReference, $batchSize = 100)
     {
         $documents = $collectionReference->limit($batchSize)->documents();
 
-        while (!$documents->isEmpty()) {
+        while (! $documents->isEmpty()) {
             foreach ($documents as $document) {
                 $document->reference()->delete();
             }

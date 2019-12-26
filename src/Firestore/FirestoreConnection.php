@@ -6,7 +6,7 @@ use Google\Cloud\Firestore\FirestoreClient;
 
 class FirestoreConnection extends FirestoreClient
 {
-	protected $query;
+    protected $query;
 
     /**
      * Get a new query builder instance.
@@ -23,8 +23,8 @@ class FirestoreConnection extends FirestoreClient
      *
      * @return string
      */
-	public function getName()
-	{
-		return 'default';
-	}
+    public function getName()
+    {
+        return 'default';
+    }
 }
