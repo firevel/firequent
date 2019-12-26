@@ -2,9 +2,9 @@
 
 namespace Firevel\Firequent\Concerns;
 
+use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Support\Arr;
 use InvalidArgumentException;
-use Illuminate\Contracts\Events\Dispatcher;
 
 trait HasEvents
 {
