@@ -2,17 +2,17 @@
 
 namespace Firevel\Firequent;
 
+use BadMethodCallException;
 use Closure;
 use Exception;
-use BadMethodCallException;
-use Illuminate\Support\Arr;
-use Illuminate\Support\Str;
-use Illuminate\Pagination\Paginator;
+use Firevel\Firequent\Firestore\Builder as QueryBuilder;
 use Illuminate\Contracts\Support\Arrayable;
-use Illuminate\Support\Traits\ForwardsCalls;
 use Illuminate\Database\Concerns\BuildsQueries;
 use Illuminate\Database\Eloquent\Relations\Relation;
-use Firevel\Firequent\Firestore\Builder as QueryBuilder;
+use Illuminate\Pagination\Paginator;
+use Illuminate\Support\Arr;
+use Illuminate\Support\Str;
+use Illuminate\Support\Traits\ForwardsCalls;
 
 /**
  * @property-read HigherOrderBuilderProxy $orWhere
@@ -329,8 +329,6 @@ class Builder
         if ($data = $this->query->find($id)) {
             return $this->hydrate([$data])->first();
         }
-
-        return null;
     }
 
     /**

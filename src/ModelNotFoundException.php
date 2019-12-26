@@ -2,8 +2,8 @@
 
 namespace Firevel\Firequent;
 
-use RuntimeException;
 use Illuminate\Support\Arr;
+use RuntimeException;
 
 class ModelNotFoundException extends RuntimeException
 {

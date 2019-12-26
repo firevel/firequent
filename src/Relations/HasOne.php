@@ -2,8 +2,8 @@
 
 namespace Firevel\Firequent\Relations;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\Concerns\SupportsDefaultModels;
 
 class HasOne extends HasOneOrMany
