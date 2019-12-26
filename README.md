@@ -9,7 +9,7 @@ Firequent is a Laravel Eloquent version modified to work with Google Firestore i
 - Firestore is NoSQL database so no schemas/migrate support.
 - Only simple where() queries ([more info](https://firebase.google.com/docs/firestore/query-data/queries))
 - No relationships support (soon!)
-- No limitation (you should avoid using count() as counting is not supported by Firestore)
+- No pagination (you should avoid using count() as counting is not supported by Firestore)
 - [Learn more](https://www.youtube.com/watch?v=v_hR4K4auoQ&list=PLl-K7zZEsYLluG5MCVEzXAQ7ACZBCuZgZ)
 
 ## Usage
