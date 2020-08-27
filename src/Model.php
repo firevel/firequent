@@ -1470,6 +1470,28 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
     }
 
     /**
+     * Retrieve the child model for a bound value.
+     *
+     * @param  string  $childType
+     * @param  mixed  $value
+     * @param  string|null  $field
+     * @return \Illuminate\Database\Eloquent\Model|null
+     */
+    public function resolveChildRouteBinding($childType, $value, $field)
+    {
+        $relationship = $this->{Str::plural(Str::camel($childType))}();
+
+        $field = $field ?: $relationship->getRelated()->getRouteKeyName();
+
+        if ($relationship instanceof HasManyThrough ||
+            $relationship instanceof BelongsToMany) {
+            return $relationship->where($relationship->getRelated()->getTable().'.'.$field, $value)->first();
+        } else {
+            return $relationship->where($field, $value)->first();
+        }
+    }
+
+    /**
      * Get the default foreign key name for the model.
      *
      * @return string
